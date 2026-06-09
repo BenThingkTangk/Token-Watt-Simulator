@@ -1,476 +1,877 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tokens/Watt/User — Thermodynamic + Quantum Engine | ΔTOM</title>
-<style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #050a0f; color: #e0e0e0; font-family: 'Courier New', monospace; overflow-x: hidden; }
-.header { background: linear-gradient(135deg, #050a0f 0%, #0a1628 50%, #050a0f 100%); border-bottom: 1px solid #00ffff33; padding: 40px 60px; text-align: center; position: relative; overflow: hidden; }
-.header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 50% 0%, #00ffff15 0%, transparent 70%); }
-.badge { display: inline-block; font-size: 10px; letter-spacing: 3px; color: #00ffff; border: 1px solid #00ffff44; padding: 4px 12px; margin-bottom: 16px; position: relative; }
-.header h1 { font-size: clamp(24px, 4vw, 48px); font-weight: 900; color: #fff; line-height: 1.1; margin-bottom: 8px; position: relative; }
-.header h1 span { color: #00ffff; }
-.header p { color: #888; font-size: 13px; letter-spacing: 1px; position: relative; }
-nav { display: flex; gap: 0; background: #0a1628; border-bottom: 1px solid #00ffff22; overflow-x: auto; }
-nav button { background: none; border: none; color: #888; padding: 14px 24px; font-family: monospace; font-size: 11px; letter-spacing: 2px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
-nav button.active { color: #00ffff; border-bottom-color: #00ffff; background: #00ffff08; }
-nav button:hover { color: #00ffff; background: #00ffff05; }
-.section { display: none; padding: 40px 60px; max-width: 1400px; margin: 0 auto; }
-.section.active { display: block; }
-.eq-box { background: #0a1628; border: 1px solid #00ffff22; border-radius: 8px; padding: 20px 28px; margin: 16px 0; font-size: 15px; line-height: 2; }
-.eq-box .label { font-size: 10px; letter-spacing: 2px; color: #00ffff; margin-bottom: 8px; }
-.eq { font-size: 16px; color: #fff; font-family: 'Courier New'; }
-.eq .var { color: #00ffff; }
-.eq .comment { color: #555; font-size: 12px; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
-.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 20px 0; }
-.card { background: #0a1628; border: 1px solid #00ffff22; border-radius: 8px; padding: 24px; }
-.card.red { border-color: #ff444422; background: #1a0808; }
-.card.green { border-color: #00ff8844; background: #081a0e; }
-.card.gold { border-color: #ffaa0044; background: #1a1008; }
-.card-label { font-size: 9px; letter-spacing: 3px; color: #555; margin-bottom: 8px; }
-.card-val { font-size: 36px; font-weight: 900; color: #00ffff; line-height: 1; }
-.card.red .card-val { color: #ff6666; }
-.card.green .card-val { color: #00ff88; }
-.card.gold .card-val { color: #ffaa00; }
-.card-sub { font-size: 11px; color: #555; margin-top: 6px; }
-h2 { font-size: 22px; color: #fff; margin: 32px 0 8px; }
-h2 span { color: #00ffff; }
-h3 { font-size: 14px; letter-spacing: 2px; color: #00ffff; margin: 24px 0 12px; text-transform: uppercase; }
-p.desc { font-size: 13px; color: #888; line-height: 1.8; margin-bottom: 16px; }
-.slider-row { display: flex; align-items: center; gap: 16px; margin: 10px 0; }
-.slider-row label { font-size: 11px; letter-spacing: 1px; color: #888; width: 220px; flex-shrink: 0; }
-.slider-row input[type=range] { flex: 1; accent-color: #00ffff; }
-.slider-row .val { font-size: 14px; color: #00ffff; width: 80px; text-align: right; font-weight: bold; }
-.result-big { text-align: center; padding: 40px; margin: 30px 0; background: radial-gradient(ellipse at 50% 50%, #00ffff08 0%, transparent 70%); border: 1px solid #00ffff33; border-radius: 12px; }
-.result-big .number { font-size: 72px; font-weight: 900; color: #00ffff; line-height: 1; }
-.result-big .unit { font-size: 16px; color: #888; margin-top: 8px; }
-.result-big .delta { font-size: 24px; font-weight: bold; color: #00ff88; margin-top: 12px; }
-.algo-trace { background: #030d03; border: 1px solid #00ff8822; border-radius: 8px; padding: 20px; font-size: 12px; line-height: 2; color: #00ff88; margin: 20px 0; font-family: monospace; }
-.algo-trace .step { color: #888; }
-.algo-trace .calc { color: #00ffff; }
-.algo-trace .result { color: #00ff88; font-weight: bold; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 20px 0; }
-th { background: #0a1628; color: #00ffff; padding: 12px 16px; text-align: left; font-size: 9px; letter-spacing: 2px; border-bottom: 1px solid #00ffff33; }
-td { padding: 12px 16px; border-bottom: 1px solid #ffffff08; color: #ccc; vertical-align: middle; }
-tr:hover td { background: #00ffff05; }
-.tick { color: #00ff88; font-size: 16px; }
-.cross { color: #ff4444; font-size: 16px; }
-.partial { color: #ffaa00; font-size: 14px; }
-.winner { background: #00ffff10 !important; }
-.winner td { color: #fff; }
-.pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; letter-spacing: 1px; }
-.pill.best { background: #00ff8820; color: #00ff88; border: 1px solid #00ff8840; }
-.pill.good { background: #00ffff20; color: #00ffff; border: 1px solid #00ffff40; }
-.pill.weak { background: #ff444420; color: #ff6666; border: 1px solid #ff444440; }
-.pill.partial { background: #ffaa0020; color: #ffaa00; border: 1px solid #ffaa0040; }
-.warning-box { background: #1a1008; border: 1px solid #ffaa0044; border-radius: 8px; padding: 16px 20px; font-size: 12px; color: #ffaa00; margin: 16px 0; line-height: 1.7; }
-.info-box { background: #081828; border: 1px solid #00ffff33; border-radius: 8px; padding: 16px 20px; font-size: 12px; color: #00ffff; margin: 16px 0; line-height: 1.8; }
-.bar { height: 8px; border-radius: 4px; background: #0a1628; margin: 6px 0; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-.qm-glow { text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff55; }
-@media (max-width: 900px) { .grid2, .grid3 { grid-template-columns: 1fr; } .section { padding: 24px 20px; } .header { padding: 30px 20px; } nav button { padding: 12px 16px; font-size: 10px; } }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TOKENS / WATT / USER — Infrastructure Efficiency Simulator | ΔTOM</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&f[]=cabinet-grotesk@400,500,700,800,900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060810;
+      --surface: #0b0f1a;
+      --surface-2: #101628;
+      --surface-3: #151d31;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(0,212,232,0.24);
+      --text: #e8edf7;
+      --muted: #94a0bd;
+      --faint: #61708f;
+      --primary: #00d4e8;
+      --primary-2: #00a8ff;
+      --success: #29e38a;
+      --warning: #ffb84d;
+      --danger: #ff6b7a;
+      --shadow: 0 16px 48px rgba(0,0,0,0.35);
+      --radius-s: 10px;
+      --radius-m: 16px;
+      --radius-l: 24px;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-16: 64px;
+      --display: 'Cabinet Grotesk', sans-serif;
+      --body: 'Satoshi', sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --text-xs: clamp(.75rem,.72rem + .18vw,.84rem);
+      --text-sm: clamp(.88rem,.84rem + .2vw,.98rem);
+      --text-base: clamp(1rem,.96rem + .24vw,1.08rem);
+      --text-lg: clamp(1.15rem,1.02rem + .6vw,1.45rem);
+      --text-xl: clamp(1.55rem,1.2rem + 1.5vw,2.35rem);
+      --text-2xl: clamp(2.3rem,1.5rem + 3vw,4.4rem);
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      font-family: var(--body);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(0,212,232,0.10), transparent 32%),
+        linear-gradient(180deg, #09101b 0%, var(--bg) 22%, #05070d 100%);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(circle at center, black 35%, transparent 95%);
+      opacity: .16;
+    }
+    img, svg { display: block; max-width: 100%; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .container { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; }
+    .header {
+      position: relative;
+      padding: var(--space-12) 0 var(--space-10);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .header::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,232,.8), transparent);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      color: var(--primary);
+      filter: drop-shadow(0 0 14px rgba(0,212,232,.22));
+    }
+    .brand-word {
+      font-family: var(--display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+    .brand-word span { color: var(--primary); }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      border: 1px solid var(--border-strong);
+      background: rgba(0,212,232,.06);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-5);
+    }
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 16px rgba(0,212,232,.9);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: var(--text-2xl);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -.05em;
+      max-width: 11ch;
+      margin-bottom: var(--space-4);
+    }
+    h1 .accent { color: var(--primary); }
+    .lede {
+      font-size: var(--text-lg);
+      color: var(--muted);
+      max-width: 62ch;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(7,10,18,.76);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-height: 60px;
+    }
+    .tabs {
+      display: flex;
+      gap: 2px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      border: 0;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      background: transparent;
+      padding: 18px 14px 16px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: .18s ease;
+    }
+    .tab.active, .tab:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: rgba(0,212,232,.04);
+    }
+    .nav-meta {
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    main { padding: var(--space-10) 0 var(--space-16); }
+    .section { display: none; }
+    .section.active { display: block; }
+    .section-head { margin-bottom: var(--space-8); }
+    .section-head h2 {
+      font-family: var(--display);
+      font-size: var(--text-xl);
+      letter-spacing: -.03em;
+      margin-bottom: var(--space-3);
+    }
+    .section-head h2 .accent { color: var(--primary); }
+    .section-head p {
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: var(--text-base);
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--space-6); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--space-6); }
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-m);
+      padding: var(--space-6);
+      box-shadow: var(--shadow);
+    }
+    .panel-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      color: var(--primary);
+      font-weight: 800;
+      margin-bottom: var(--space-4);
+    }
+    .slider-row { margin-bottom: var(--space-5); }
+    .slider-row:last-child { margin-bottom: 0; }
+    .slider-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+    .slider-label {
+      color: var(--muted);
+      font-size: var(--text-sm);
+      font-weight: 500;
+    }
+    .slider-value {
+      color: var(--primary);
+      font-family: var(--mono);
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      background: linear-gradient(90deg, rgba(0,212,232,.28), rgba(255,255,255,.08));
+      border-radius: 999px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #74f4ff, var(--primary));
+      border: 2px solid #072632;
+      box-shadow: 0 0 0 4px rgba(0,212,232,.12), 0 0 20px rgba(0,212,232,.35);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #74f4ff, var(--primary));
+      border: 2px solid #072632;
+      box-shadow: 0 0 0 4px rgba(0,212,232,.12), 0 0 20px rgba(0,212,232,.35);
+    }
+    .hero-result {
+      position: relative;
+      overflow: hidden;
+      margin: var(--space-8) 0;
+      padding: var(--space-12) var(--space-8);
+      border-radius: var(--radius-l);
+      border: 1px solid var(--border-strong);
+      background:
+        radial-gradient(circle at 50% 40%, rgba(0,212,232,.11), transparent 44%),
+        linear-gradient(180deg, rgba(0,212,232,.05), rgba(255,255,255,.02));
+      text-align: center;
+    }
+    .hero-result::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+      transform: translateX(-100%);
+      animation: sweep 8s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes sweep { to { transform: translateX(100%); } }
+    .result-kicker {
+      color: var(--faint);
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: var(--space-2);
+    }
+    .result-number {
+      font-family: var(--display);
+      font-size: clamp(3.8rem, 12vw, 7rem);
+      line-height: .95;
+      letter-spacing: -.06em;
+      color: var(--primary);
+      text-shadow: 0 0 30px rgba(0,212,232,.22);
+      font-weight: 900;
+    }
+    .result-unit {
+      margin-top: var(--space-3);
+      color: var(--muted);
+      font-size: var(--text-sm);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+    .result-delta {
+      display: inline-flex;
+      gap: var(--space-2);
+      align-items: center;
+      margin-top: var(--space-5);
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(41,227,138,.22);
+      background: rgba(41,227,138,.08);
+      color: var(--success);
+      font-family: var(--mono);
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+    .stats .panel { padding-bottom: var(--space-5); }
+    .stat-label {
+      color: var(--faint);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: 11px;
+      margin-bottom: var(--space-3);
+      font-family: var(--mono);
+    }
+    .stat-value {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+      letter-spacing: -.04em;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .stat-value.primary { color: var(--primary); }
+    .stat-value.success { color: var(--success); }
+    .stat-value.warning { color: var(--warning); }
+    .stat-sub { margin-top: var(--space-2); color: var(--muted); font-size: var(--text-sm); }
+    .trace {
+      margin-top: var(--space-8);
+      background: #050912;
+      border: 1px solid rgba(41,227,138,.16);
+      border-radius: var(--radius-m);
+      padding: var(--space-6);
+      font-family: var(--mono);
+      box-shadow: var(--shadow);
+    }
+    .trace-group + .trace-group {
+      margin-top: var(--space-5);
+      padding-top: var(--space-5);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .trace-step {
+      color: var(--faint);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+    }
+    .trace-line { color: var(--primary); font-size: 13px; margin-bottom: 8px; }
+    .trace-line:last-child { margin-bottom: 0; }
+    .trace-line.result { color: var(--success); font-weight: 700; }
+    .equation-card + .equation-card { margin-top: var(--space-5); }
+    .equation-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-m);
+      padding: var(--space-6);
+    }
+    .equation-label {
+      color: var(--primary);
+      font-size: 12px;
+      letter-spacing: .14em;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+      font-family: var(--mono);
+    }
+    .equation {
+      font-family: var(--mono);
+      font-size: clamp(.95rem,.93rem + .15vw,1.05rem);
+      color: var(--text);
+      line-height: 1.9;
+    }
+    .equation .muted { color: var(--faint); }
+    .callout {
+      margin-top: var(--space-5);
+      padding: var(--space-5);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      color: var(--muted);
+    }
+    .callout strong { color: var(--text); }
+    .callout.info { border-color: var(--border-strong); background: rgba(0,212,232,.06); }
+    .callout.warning { border-color: rgba(255,184,77,.24); background: rgba(255,184,77,.07); }
+    .callout.warning strong { color: var(--warning); }
+    .table-wrap {
+      overflow: auto;
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      box-shadow: var(--shadow);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 980px; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.06); vertical-align: top; }
+    th {
+      text-align: left;
+      color: var(--faint);
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: 11px;
+      background: rgba(255,255,255,.02);
+      font-family: var(--mono);
+    }
+    td { color: var(--muted); font-size: var(--text-sm); }
+    tr:last-child td { border-bottom: 0; }
+    tr.highlight td { background: rgba(0,212,232,.04); }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-left: 8px;
+      font-family: var(--mono);
+    }
+    .pill.best { color: var(--success); background: rgba(41,227,138,.09); border: 1px solid rgba(41,227,138,.18); }
+    .pill.good { color: var(--primary); background: rgba(0,212,232,.08); border: 1px solid rgba(0,212,232,.18); }
+    .pill.note { color: var(--warning); background: rgba(255,184,77,.08); border: 1px solid rgba(255,184,77,.2); }
+    .yes { color: var(--success); font-weight: 700; }
+    .mixed { color: var(--warning); font-weight: 700; }
+    .no { color: var(--danger); font-weight: 700; }
+    .reason-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--space-6); }
+    .reason {
+      position: relative;
+      overflow: hidden;
+      padding: var(--space-6);
+      border-radius: var(--radius-m);
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      box-shadow: var(--shadow);
+    }
+    .reason::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), transparent);
+    }
+    .reason-num {
+      color: var(--faint);
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 3rem;
+      line-height: 1;
+      letter-spacing: -.04em;
+      margin-bottom: var(--space-3);
+    }
+    .reason h3 {
+      font-family: var(--display);
+      font-size: 1.35rem;
+      letter-spacing: -.02em;
+      margin-bottom: var(--space-3);
+    }
+    .reason p { color: var(--muted); font-size: var(--text-sm); }
+    .foot {
+      border-top: 1px solid var(--border);
+      padding: var(--space-6) 0 var(--space-10);
+      color: var(--faint);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    @media (max-width: 980px) {
+      .grid-2, .grid-3, .reason-grid { grid-template-columns: 1fr; }
+      .nav-inner { align-items: stretch; flex-direction: column; justify-content: center; padding: 8px 0; }
+      .nav-meta { display: none; }
+      h1 { max-width: 14ch; }
+      .hero-result { padding: var(--space-10) var(--space-5); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero-result::before { animation: none; }
+    }
+  </style>
 </head>
 <body>
+  <header class="header">
+    <div class="container">
+      <div class="brand" aria-label="ATOM brand">
+        <svg class="brand-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="20" cy="20" r="3.2" fill="currentColor"/>
+          <ellipse cx="20" cy="20" rx="15" ry="5.8" stroke="currentColor" stroke-width="1.5" opacity=".75"/>
+          <ellipse cx="20" cy="20" rx="15" ry="5.8" stroke="currentColor" stroke-width="1.5" opacity=".5" transform="rotate(60 20 20)"/>
+          <ellipse cx="20" cy="20" rx="15" ry="5.8" stroke="currentColor" stroke-width="1.5" opacity=".5" transform="rotate(120 20 20)"/>
+        </svg>
+        <div class="brand-word">Δ<span>TOM</span></div>
+      </div>
+      <div class="eyebrow">Nirmata Holdings · Infrastructure Efficiency</div>
+      <h1><span class="accent">TOKENS / WATT / USER</span><br>Infrastructure Efficiency Simulator</h1>
+      <p class="lede">A polished scenario model for AI delivery efficiency. The simulator estimates how caching, routing, and egress reduction can improve tokens delivered per watt-hour, while keeping the claims and equations aligned with what the model actually computes.</p>
+    </div>
+  </header>
 
-<div class="header">
-  <div class="badge">ARCHITECTED FOR PERPLEX
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="tabs" id="tabs"></div>
+      <div class="nav-meta">ΔTOM / SYSTEM MODEL / JUNE 2026</div>
+    </div>
+  </nav>
 
-ITY · JUNE 2026</div>
-  <h1><span>TOKENS / WATT / USER</span><br/>Thermodynamic + Quantum Engine</h1>
-  <p>The metric that determines who wins the AI race — live simulator with real physics</p>
-</div>
+  <main class="container" id="app"></main>
 
-<nav id="nav"></nav>
+  <footer class="foot">
+    <div class="container">ΔTOM · Tokens / Watt / User · polished repo-ready HTML build</div>
+  </footer>
 
-<div id="root"></div>
+  <script>
+    const state = {
+      monthlyQueries: 1500,
+      avgTokensPerQuery: 600,
+      whPerQuery: 1.0,
+      cacheHit: 18,
+      routingGain: 10,
+      egressReduction: 5,
+      energyRate: 0.09
+    };
 
-<script>
-const state = {
-  monthlyQueries: 1500,  // millions
-  avgTokensPerQuery: 600,
-  whPerQuery: 1.0,
-  semanticCacheHit: 18,   // %
-  routingEfficiency: 10,  // %
-  egressReduction: 5      // %
-};
+    const sections = [
+      { id: 'simulator', label: 'Simulator' },
+      { id: 'equations', label: 'Equations' },
+      { id: 'competitive', label: 'Competitive Matrix' },
+      { id: 'rationale', label: 'Why This Framing Works' }
+    ];
 
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-' + id).classList.add('active');
-  document.querySelector(`[data-sec="${id}"]`).classList.add('active');
-}
-
-function calculate() {
-  const { monthlyQueries, avgTokensPerQuery, whPerQuery, semanticCacheHit, routingEfficiency, egressReduction } = state;
-  
-  // Baseline (today — no convergence layer)
-  const totalQueriesMonth = monthlyQueries * 1e6;
-  const totalTokensMonth = totalQueriesMonth * avgTokensPerQuery;
-  const totalWhMonth = totalQueriesMonth * whPerQuery;
-  const tokensPerWh_baseline = avgTokensPerQuery / whPerQuery;
-  
-  // ========== THERMODYNAMICS CORRECTION ==========
-  // Second Law: Entropy reduction via convergence layer
-  // ΔS = k_B ln(W) — Boltzmann entropy, where W = number of microstates
-  // Without convergence: 3 independent clouds × 5 failure modes = 15 microstates
-  // With convergence: unified control plane = 3 microstates (single SLA owner)
-  const entropyReductionFactor = Math.log(15) / Math.log(3);  // ~1.365
-  
-  // Semantic caching: direct energy elimination (cache hit = no GPU cycle)
-  const cacheEnergyReduction = (semanticCacheHit / 100);
-  
-  // Routing right-sizing: reduces wasted compute via intelligent placement
-  const routingFactor = (routingEfficiency / 100);
-  
-  // Egress elimination: cross-cloud data movement thermal cost
-  const egressFactor = (egressReduction / 100);
-  
-  // Blended efficiency gain (non-linear — compounding factors)
-  const totalEfficiencyGain = cacheEnergyReduction + 
-                               (1 - cacheEnergyReduction) * routingFactor + 
-                               (1 - cacheEnergyReduction) * (1 - routingFactor) * egressFactor;
-  
-  // ========== QUANTUM MECHANICS CORRECTION ==========
-  // At 4nm process node, quantum tunneling creates leakage current
-  // Heisenberg Uncertainty: ΔE · Δt ≥ ħ/2
-  // Leakage power scales inversely with feature size due to tunneling probability
-  const h_bar = 1.054571817e-34;  // Reduced Planck constant (J·s)
-  const nm_to_m = 1e-9;
-  const feature_size = 4 * nm_to_m;  // GB200 Blackwell at 4nm
-  
-  // Quantum tunneling probability (simplified WKB approximation)
-  // T ≈ exp(-2 * barrier_width / λ_deBroglie)
-  // At 4nm, ~15% of energy is lost to quantum leakage in transistor switching
-  const quantumLeakageFactor = 0.15;
-  
-  // Edge inference reduces this leakage by distributing load (lower per-chip utilization)
-  const edgeDistributionFactor = 0.92;  // 8% leakage recovery via distributed inference
-  
-  // Apply quantum correction to energy per query
-  const whPerQuery_quantumCorrected = whPerQuery * (1 - quantumLeakageFactor * (1 - edgeDistributionFactor));
-  
-  // With convergence layer
-  const whPerQuery_withLayer = whPerQuery_quantumCorrected * (1 - totalEfficiencyGain);
-  const tokensPerWh_withLayer = avgTokensPerQuery / whPerQuery_withLayer;
-  
-  // Improvement
-  const improvementPercent = ((tokensPerWh_withLayer - tokensPerWh_baseline) / tokensPerWh_baseline) * 100;
-  
-  // Cost savings (assuming $0.09/kWh blended rate for hyperscale)
-  const energySavedWhMonth = totalWhMonth * totalEfficiencyGain;
-  const costSavedMonth = (energySavedWhMonth / 1000) * 0.09;  // Convert Wh to kWh
-  const costSavedYear = costSavedMonth * 12;
-  
-  return {
-    tokensPerWh_baseline: Math.round(tokensPerWh_baseline),
-    tokensPerWh_withLayer: Math.round(tokensPerWh_withLayer),
-    improvementPercent: improvementPercent.toFixed(1),
-    totalEfficiencyGain: (totalEfficiencyGain * 100).toFixed(1),
-    costSavedYear: costSavedYear.toLocaleString('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 0}),
-    entropyReductionFactor: entropyReductionFactor.toFixed(3),
-    quantumLeakageFactor: (quantumLeakageFactor * 100).toFixed(1),
-    trace: {
-      cacheEnergyReduction: (cacheEnergyReduction * 100).toFixed(1),
-      routingFactor: (routingFactor * 100).toFixed(1),
-      egressFactor: (egressFactor * 100).toFixed(1),
-      whPerQuery_baseline: whPerQuery.toFixed(3),
-      whPerQuery_quantumCorrected: whPerQuery_quantumCorrected.toFixed(3),
-      whPerQuery_withLayer: whPerQuery_withLayer.toFixed(3)
+    function compoundedGain(c, r, e) {
+      return c + (1 - c) * r + (1 - c) * (1 - r) * e;
     }
-  };
-}
 
-function render() {
-  const results = calculate();
-  
-  const html = `
-    <section id="sec-simulator" class="section active">
-      <h2><span>Interactive Simulator</span> — Thermodynamic + Quantum Engine</h2>
-      <p class="desc">Adjust inputs to model token value per watt per user under different workload configurations. Algorithm integrates Second Law entropy reduction, quantum tunneling leakage at 4nm process nodes, and distributed inference effects.</p>
-      
-      <div class="grid2">
-        <div>
-          <h3>WORKLOAD INPUTS</h3>
-          <div class="slider-row">
-            abel>Monthly Queries (millions)</label>
-            <input type="range" min="100" max="5000" step="50" value="${state.monthlyQueries}" id="s-queries">
-            <span class="val" id="v-queries">${state.monthlyQueries}M</span>
-          </div>
-          <div class="slider-row">
-            abel>Avg Tokens / Query</label>
-            <input type="range" min="200" max="1200" step="50" value="${state.avgTokensPerQuery}" id="s-tokens">
-            <span class="val" id="v-tokens">${state.avgTokensPerQuery}</span>
-          </div>
-          <div class="slider-row">
-            abel>Energy / Query (Wh)</label>
-            <input type="range" min="0.3" max="3.0" step="0.1" value="${state.whPerQuery}" id="s-wh">
-            <span class="val" id="v-wh">${state.whPerQuery.toFixed(1)} Wh</span>
-          </div>
-        </div>
-        
-        <div>
-          <h3>CONVERGENCE LAYER INPUTS</h3>
-          <div class="slider-row">
-            abel>Semantic Cache Hit Rate (%)</label>
-            <input type="range" min="0" max="40" step="1" value="${state.semanticCacheHit}" id="s-cache">
-            <span class="val" id="v-cache">${state.semanticCacheHit}%</span>
-          </div>
-          <div class="slider-row">
-            abel>Routing Efficiency Gain (%)</label>
-            <input type="range" min="0" max="25" step="1" value="${state.routingEfficiency}" id="s-routing">
-            <span class="val" id="v-routing">${state.routingEfficiency}%</span>
-          </div>
-          <div class="slider-row">
-            abel>Egress Elimination (%)</label>
-            <input type="range" min="0" max="15" step="1" value="${state.egressReduction}" id="s-egress">
-            <span class="val" id="v-egress">${state.egressReduction}%</span>
-          </div>
-        </div>
-      </div>
-      
-      <div class="result-big">
-        <div class="number qm-glow">${results.tokensPerWh_withLayer}</div>
-        <div class="unit">tokens / Wh / user WITH CONVERGENCE LAYER</div>
-        <div class="delta">+${results.improvementPercent}% improvement vs baseline (${results.tokensPerWh_baseline} tokens/Wh)</div>
-      </div>
-      
-      <div class="grid3">
-        <div class="card green">
-          <div class="card-label">TOTAL EFFICIENCY GAIN</div>
-          <div class="card-val">${results.totalEfficiencyGain}%</div>
-          <div class="card-sub">Blended thermodynamic + quantum correction</div>
-        </div>
-        <div class="card gold">
-          <div class="card-label">AVOIDED ANNUAL COST</div>
-          <div class="card-val">${results.costSavedYear}</div>
-          <div class="card-sub">At $0.09/kWh hyperscale rate</div>
-        </div>
-        <div class="card">
-          <div class="card-label">ENTROPY REDUCTION FACTOR</div>
-          <div class="card-val">${results.entropyReductionFactor}</div>
-          <div class="card-sub">Boltzmann Δ S = k_B ln(W₁/W₀)</div>
-        </div>
-      </div>
-      
-      <div class="algo-trace">
-        <div><span class="step">STEP 1 // BASELINE CALCULATION</span></div>
-        <div><span class="calc">Energy/Query (baseline) = ${results.trace.whPerQuery_baseline} Wh</span></div>
-        <div><span class="calc">Tokens/Wh (baseline) = ${state.avgTokensPerQuery} / ${results.trace.whPerQuery_baseline} = ${results.tokensPerWh_baseline}</span></div>
-        
-        <div style="margin-top:16px;"><span class="step">STEP 2 // QUANTUM MECHANICS CORRECTION</span></div>
-        <div><span class="calc">Quantum leakage at 4nm process node = ${results.quantumLeakageFactor}%</span></div>
-        <div><span class="calc">Edge distribution recovery factor = 0.92 (8% leakage recovered)</span></div>
-        <div><span class="calc">Energy/Query (quantum-corrected) = ${results.trace.whPerQuery_quantumCorrected} Wh</span></div>
-        
-        <div style="margin-top:16px;"><span class="step">STEP 3 // THERMODYNAMIC ENTROPY REDUCTION</span></div>
-        <div><span class="calc">Semantic cache energy reduction = ${results.trace.cacheEnergyReduction}%</span></div>
-        <div><span class="calc">Routing efficiency gain (on non-cached) = ${results.trace.routingFactor}%</span></div>
-        <div><span class="calc">Egress elimination (on remaining) = ${results.trace.egressFactor}%</span></div>
-        <div><span class="calc">Blended efficiency gain (compounded) = ${results.totalEfficiencyGain}%</span></div>
-        
-        <div style="margin-top:16px;"><span class="step">STEP 4 // FINAL OUTPUT</span></div>
-        <div><span class="result">Energy/Query (with convergence) = ${results.trace.whPerQuery_withLayer} Wh</span></div>
-        <div><span class="result">Tokens/Wh (with convergence) = ${state.avgTokensPerQuery} / ${results.trace.whPerQuery_withLayer} = ${results.tokensPerWh_withLayer}</span></div>
-        <div><span class="result">IMPROVEMENT = +${results.improvementPercent}%</span></div>
-      </div>
-    </section>
-    
-    <section id="sec-equations" class="section">
-      <h2><span>Governing Equations</span> — Thermodynamics + Quantum Mechanics</h2>
-      <p class="desc">The simulator algorithm is grounded in real physics — not marketing abstractions. Every efficiency lever maps to a specific physical mechanism.</p>
-      
-      <div class="eq-box">
-        <div class="label">SECOND LAW OF THERMODYNAMICS · ENTROPY</div>
-        <div class="eq"><span class="var">ΔS</span> = k<sub>B</sub> ln(<span class="var">W</span>) <span class="comment">// Boltzmann entropy, where W = microstates</span></div>
-        <div class="eq">Without convergence: <span class="var">W₀</span> = 15 (3 clouds × 5 failure modes)</div>
-        <div class="eq">With convergence: <span class="var">W₁</span> = 3 (single SLA owner)</div>
-        <div class="eq">Entropy reduction: <span class="var">ΔS</span> = k<sub>B</sub> ln(15/3) = <span class="result">k<sub>B</sub> × ${results.entropyReductionFactor}</span></div>
-      </div>
-      
-      <div class="eq-box">
-        <div class="label">ENERGY CONSERVATION · FIRST LAW</div>
-        <div class="eq"><span class="var">E<sub>query</sub></span> = <span class="var">N<sub>FLOPs</sub></span> × <span class="var">E<sub>FLOP</sub></span> <span class="comment">// Total energy = operations × energy/operation</span></div>
-        <div class="eq">Semantic caching: <span class="var">N<sub>FLOPs</sub></span> → 0 for cache hits (direct elimination)</div>
-        <div class="eq">Energy saved = <span class="result">(cache hit rate) × E<sub>query</sub></span></div>
-      </div>
-      
-      <div class="eq-box">
-        <div class="label">QUANTUM TUNNELING · HEISENBERG UNCERTAINTY</div>
-        <div class="eq"><span class="var">ΔE</span> · <span class="var">Δt</span> ≥ <span class="var">ħ</span> / 2 <span class="comment">// ħ = 1.054×10⁻³⁴ J·s</span></div>
-        <div class="eq">At 4nm feature size, quantum tunneling probability:</div>
-        <div class="eq"><span class="var">T</span> ≈ exp(-2α<span class="var">d</span>) <span class="comment">// WKB approximation, d = barrier width</span></div>
-        <div class="eq">Leakage power ∝ <span class="result">15% of switching energy at 4nm</span> (GB200 Blackwell)</div>
-        <div class="eq">Edge distribution reduces per-chip utilization → 8% leakage recovery</div>
-      </div>
-      
-      <div class="eq-box">
-        <div class="label">TOKENS PER WATT · FINAL EFFICIENCY METRIC</div>
-        <div class="eq"><span class="var">η</span> = <span class="var">N<sub>tokens</sub></span> / <span class="var">E<sub>Wh</sub></span> <span class="comment">// Efficiency = tokens generated per Wh</span></div>
-        <div class="eq">Baseline: <span class="var">η₀</span> = ${results.tokensPerWh_baseline} tokens/Wh</div>
-        <div class="eq">With convergence: <span class="var">η₁</span> = <span class="result">${results.tokensPerWh_withLayer} tokens/Wh</span></div>
-        <div class="eq">Improvement: <span class="result">Δη = +${results.improvementPercent}%</span></div>
-      </div>
-      
-      <div class="info-box">
-        <strong>Why this matters:</strong> The tokens/watt/user metric is not arbitrary. It is the direct expression of thermodynamic efficiency in AI inference. Every watt consumed generates heat that must be dissipated. Every token delivered represents useful work extracted from that energy. The convergence layer does not add new energy — it stops wasting the energy already being consumed by eliminating coordination entropy and quantum leakage losses.
-      </div>
-    </section>
-    
-    <section id="sec-competitive" class="section">
-      <h2><span>Honest Competitive Matrix</span> — Akamai vs Alternatives</h2>
-      <p class="desc">Akamai is not the only solution. It is the best fit for Perplexity's specific problem. Here is where every alternative wins and where it falls short — honestly assessed.</p>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>PROVIDER</th>
-            <th style="text-align:center;">EDGE POPs</th>
-            <th style="text-align:center;">GPU AT EDGE</th>
-            <th style="text-align:center;">SEMANTIC CACHE</th>
-            <th style="text-align:center;">NEUTRAL BROKER</th>
-            <th style="text-align:center;">SECURITY PERIMETER</th>
-            <th style="text-align:center;">ENTERPRISE SLA</th>
-            <th>BEST FOR</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="winner">
-            <td><strong>Akamai AI Grid</strong> <span class="pill best">RECOMMENDED</span></td>
-            <td style="text-align:center;"><span class="tick">✓</span> 4,400</td>
-            <td style="text-align:center;"><span class="tick">✓</span> Blackwell</td>
-            <td style="text-align:center;"><span class="partial">◐</span> Roadmap</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td style="text-align:center;"><span class="tick">✓</span> WAAP/Prolexic</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td>Global-scale distributed inference + neutral multi-cloud orchestration</td>
-          </tr>
-          <tr>
-            <td><strong>Cloudflare AI Gateway</strong> <span class="pill good">STRONG</span></td>
-            <td style="text-align:center;">300</td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td style="text-align:center;"><span class="partial">◐</span> Exact-match only</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td style="text-align:center;"><span class="partial">◐</span> Partial</td>
-            <td>Front-door routing + caching; already in Perplexity's stack</td>
-          </tr>
-          <tr>
-            <td><strong>Fastly AI</strong> <span class="pill good">STRONG</span></td>
-            <td style="text-align:center;">~70</td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td style="text-align:center;"><span class="tick">✓</span> Production</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td style="text-align:center;"><span class="partial">◐</span> Partial</td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td>Best semantic caching today; weak on scale + GPU hardware</td>
-          </tr>
-          <tr>
-            <td><strong>AWS Native (Bedrock + CloudFront)</strong> <span class="pill weak">CONFLICTED</span></td>
-            <td style="text-align:center;">400</td>
-            <td style="text-align:center;"><span class="cross">✗</span> CloudFront only</td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td style="text-align:center;"><span class="cross">✗</span> Conflicted</td>
-            <td style="text-align:center;"><span class="partial">◐</span> Partial</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td>Cannot broker neutrally across AWS/Azure/CoreWeave</td>
-          </tr>
-          <tr>
-            <td><strong>Kong AI Gateway</strong> <span class="pill good">STRONG</span></td>
-            <td style="text-align:center;">Software only</td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td style="text-align:center;"><span class="tick">✓</span> Semantic + MCP</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td style="text-align:center;"><span class="cross">✗</span> Uses Akamai</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td>Application-layer routing; runs ON TOP of Akamai LKE</td>
-          </tr>
-          <tr>
-            <td><strong>Bifrost / LiteLLM / OpenRouter</strong> <span class="pill partial">DIFFERENT LAYER</span></td>
-            <td style="text-align:center;">Software only</td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td style="text-align:center;"><span class="tick">✓</span> Bifrost: 11µs latency</td>
-            <td style="text-align:center;"><span class="tick">✓</span></td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td style="text-align:center;"><span class="cross">✗</span></td>
-            <td>Solves app routing, not infrastructure coordination</td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <div class="warning-box">
-        <strong>Honest caveat:</strong> Akamai's semantic caching is on the roadmap, not fully live in production. Fastly has a more mature semantic cache today. The reason Akamai is still the recommended choice: Fastly has 70 PoPs and no GPU hardware. For Perplexity's specific problem — distributed inference offload at global scale with a neutral control plane across AWS, Azure/Foundry, and CoreWeave — Akamai is the only provider that can do all of it. Fastly does the caching piece better today. Akamai does the whole system.
-      </div>
-      
-      <div class="info-box">
-        <strong>Kong + Akamai combined architecture:</strong> Kong AI Gateway sitting on top of Akamai LKE (Linode Kubernetes Engine) with Akamai Firewall for AI as the security perimeter is documented and production-ready. Kong handles application-layer semantic routing, MCP protocol support, and fine-grained per-route governance. Akamai handles the infrastructure: 4,400 PoPs, GPU hardware, edge distribution, security perimeter, and neutral multi-cloud brokerage. That combined architecture is stronger than Akamai alone.
-      </div>
-    </section>
-    
-    <section id="sec-rationale" class="section">
-      <h2><span>Why Akamai Wins</span> — The Structural Argument</h2>
-      <p class="desc">Three reasons Akamai is the defensible choice for Perplexity's convergence layer — not marketing, structural fit.</p>
-      
-      <div class="grid2">
-        <div class="card green">
-          <h3>1. NEUTRAL BROKER</h3>
-          <p class="desc">The only provider that can honestly orchestrate across AWS, Microsoft Foundry, and CoreWeave without a commercial conflict. AWS cannot be the neutral broker when it is also one of the three factories being brokered. Akamai has no inference product to protect — it wins when Perplexity's existing stack runs more efficiently.</p>
-        </div>
-        
-        <div class="card green">
-          <h3>2. GPU AT THE EDGE AT SCALE</h3>
-          <p class="desc">4,400 locations with Blackwell hardware is structurally unmatched. Cloudflare (300 PoPs, no GPU), Fastly (70 PoPs, no GPU), and pure-software gateways cannot offload inference to the edge. They can route requests — they cannot run them. Distributed inference requires distributed GPUs.</p>
-        </div>
-      </div>
-      
-      <div class="card green">
-        <h3>3. FULL-STACK SECURITY + ENTERPRISE SLA</h3>
-        <p class="desc">Akamai WAAP (Web Application and API Protector), Bot Manager, Prolexic DDoS mitigation, and single SLA ownership across the entire convergence layer. No pure-software gateway or Fastly-scale provider can match the enterprise security perimeter. For a platform at Perplexity's scale (1.5B+ queries/month, 100M+ MAU), a security gap at the convergence layer is an existential risk.</p>
-      </div>
-      
-      <div class="info-box">
-        <strong>The one-sentence thesis:</strong> Akamai is not the only solution and it is not perfect on every dimension. It is the best fit for Perplexity's specific problem because it is the only provider that can (1) broker neutrally across three independent cloud factories, (2) deploy GPU inference hardware at global edge scale, and (3) own the full-stack security and SLA for the convergence layer — all simultaneously. Every alternative is stronger on at least one dimension. None can do all three.
-      </div>
-    </section>
-  `;
-  
-  document.getElementById('root').innerHTML = html;
-  
-  // Nav
-  document.getElementById('nav').innerHTML = `
-    <button class="active" data-sec="simulator" onclick="showSection('simulator')">SIMULATOR</button>
-    <button data-sec="equations" onclick="showSection('equations')">EQUATIONS</button>
-    <button data-sec="competitive" onclick="showSection('competitive')">COMPETITIVE MATRIX</button>
-    <button data-sec="rationale" onclick="showSection('rationale')">WHY AKAMAI WINS</button>
-  `;
-  
-  // Sliders
-  ['queries', 'tokens', 'wh', 'cache', 'routing', 'egress'].forEach(id => {
-    const slider = document.getElementById('s-' + id);
-    if (slider) {
-      slider.addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value);
-        const map = {
-          queries: 'monthlyQueries',
-          tokens: 'avgTokensPerQuery',
-          wh: 'whPerQuery',
-          cache: 'semanticCacheHit',
-          routing: 'routingEfficiency',
-          egress: 'egressReduction'
-        };
-        state[map[id]] = val;
-        render();
+    function calculate() {
+      const monthlyQueries = state.monthlyQueries * 1e6;
+      const baselineWhPerQuery = state.whPerQuery;
+      const tokens = state.avgTokensPerQuery;
+      const c = state.cacheHit / 100;
+      const r = state.routingGain / 100;
+      const e = state.egressReduction / 100;
+      const gain = compoundedGain(c, r, e);
+      const adjustedWhPerQuery = baselineWhPerQuery * (1 - gain);
+      const baselineTokensPerWh = tokens / baselineWhPerQuery;
+      const adjustedTokensPerWh = tokens / adjustedWhPerQuery;
+      const improvement = ((adjustedTokensPerWh - baselineTokensPerWh) / baselineTokensPerWh) * 100;
+      const monthlyEnergyBaselineWh = monthlyQueries * baselineWhPerQuery;
+      const monthlyEnergyAdjustedWh = monthlyQueries * adjustedWhPerQuery;
+      const monthlyWhSaved = monthlyEnergyBaselineWh - monthlyEnergyAdjustedWh;
+      const yearlyCostSaved = (monthlyWhSaved / 1000) * state.energyRate * 12;
+      return {
+        monthlyQueries,
+        baselineWhPerQuery,
+        adjustedWhPerQuery,
+        baselineTokensPerWh,
+        adjustedTokensPerWh,
+        gain,
+        improvement,
+        monthlyWhSaved,
+        yearlyCostSaved
+      };
+    }
+
+    function fmtInt(n) { return Math.round(n).toLocaleString(); }
+    function fmtPct(n, d = 1) { return `${n.toFixed(d)}%`; }
+    function fmtMoney(n) {
+      return n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+    }
+
+    function renderTabs(active = 'simulator') {
+      const tabs = document.getElementById('tabs');
+      tabs.innerHTML = sections.map(s => `
+        <button class="tab ${s.id === active ? 'active' : ''}" data-tab="${s.id}">${s.label}</button>
+      `).join('');
+      tabs.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => showSection(btn.dataset.tab));
       });
     }
-  });
-}
 
-render();
-</script>
+    function sectionShell(activeId, content) {
+      return sections.map(s => `<section class="section ${s.id === activeId ? 'active' : ''}" id="sec-${s.id}">${content[s.id]}</section>`).join('');
+    }
 
+    function simulatorSection(r) {
+      return `
+        <div class="section-head">
+          <h2><span class="accent">Interactive Simulator</span> — exact arithmetic, explicit assumptions</h2>
+          <p>Adjust the workload and systems-efficiency inputs to estimate tokens delivered per watt-hour. This model uses explicit baseline energy arithmetic plus compounded reductions from cache hits, routing optimization, and egress reduction.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title">Workload inputs</div>
+            <div class="slider-row">
+              <div class="slider-top"><label class="slider-label" for="s-queries">Monthly queries (millions)</label><div class="slider-value">${state.monthlyQueries}M</div></div>
+              <input id="s-queries" type="range" min="100" max="5000" step="50" value="${state.monthlyQueries}">
+            </div>
+            <div class="slider-row">
+              <div class="slider-top"><label class="slider-label" for="s-tokens">Average tokens per query</label><div class="slider-value">${state.avgTokensPerQuery}</div></div>
+              <input id="s-tokens" type="range" min="200" max="1200" step="50" value="${state.avgTokensPerQuery}">
+            </div>
+            <div class="slider-row">
+              <div class="slider-top"><label class="slider-label" for="s-wh">Energy per query (Wh)</label><div class="slider-value">${state.whPerQuery.toFixed(2)} Wh</div></div>
+              <input id="s-wh" type="range" min="0.3" max="3.0" step="0.05" value="${state.whPerQuery}">
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">Systems-efficiency inputs</div>
+            <div class="slider-row">
+              <div class="slider-top"><label class="slider-label" for="s-cache">Cache-hit energy reduction</label><div class="slider-value">${state.cacheHit}%</div></div>
+              <input id="s-cache" type="range" min="0" max="40" step="1" value="${state.cacheHit}">
+            </div>
+            <div class="slider-row">
+              <div class="slider-top"><label class="slider-label" for="s-routing">Routing gain on uncached traffic</label><div class="slider-value">${state.routingGain}%</div></div>
+              <input id="s-routing" type="range" min="0" max="25" step="1" value="${state.routingGain}">
+            </div>
+            <div class="slider-row">
+              <div class="slider-top"><label class="slider-label" for="s-egress">Egress reduction on remaining traffic</label><div class="slider-value">${state.egressReduction}%</div></div>
+              <input id="s-egress" type="range" min="0" max="20" step="1" value="${state.egressReduction}">
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-result">
+          <div class="result-kicker">Adjusted delivery efficiency</div>
+          <div class="result-number">${fmtInt(r.adjustedTokensPerWh)}</div>
+          <div class="result-unit">tokens / Wh / user</div>
+          <div class="result-delta">+${fmtPct(r.improvement)} vs baseline · ${fmtInt(r.baselineTokensPerWh)} tokens / Wh</div>
+        </div>
+
+        <div class="grid-3 stats">
+          <div class="panel">
+            <div class="stat-label">Compounded efficiency gain</div>
+            <div class="stat-value primary">${fmtPct(r.gain * 100)}</div>
+            <div class="stat-sub">Combined effect of cache hits, routing improvement, and lower egress overhead.</div>
+          </div>
+          <div class="panel">
+            <div class="stat-label">Adjusted energy per query</div>
+            <div class="stat-value success">${r.adjustedWhPerQuery.toFixed(3)}</div>
+            <div class="stat-sub">Wh per query after applying the compounded systems model.</div>
+          </div>
+          <div class="panel">
+            <div class="stat-label">Estimated annual energy-cost reduction</div>
+            <div class="stat-value warning">${fmtMoney(r.yearlyCostSaved)}</div>
+            <div class="stat-sub">At ${state.energyRate.toFixed(2)} USD per kWh, using the same adjusted energy model shown above.</div>
+          </div>
+        </div>
+
+        <div class="trace">
+          <div class="trace-group">
+            <div class="trace-step">Step 1 · baseline arithmetic</div>
+            <div class="trace-line">Baseline tokens / Wh = ${state.avgTokensPerQuery} / ${r.baselineWhPerQuery.toFixed(3)} = ${fmtInt(r.baselineTokensPerWh)}</div>
+            <div class="trace-line">Monthly baseline energy = ${fmtInt(state.monthlyQueries)}M × ${r.baselineWhPerQuery.toFixed(3)} Wh/query</div>
+          </div>
+          <div class="trace-group">
+            <div class="trace-step">Step 2 · compounded systems model</div>
+            <div class="trace-line">g = c + (1-c)r + (1-c)(1-r)e</div>
+            <div class="trace-line">c = ${(state.cacheHit/100).toFixed(2)}, r = ${(state.routingGain/100).toFixed(2)}, e = ${(state.egressReduction/100).toFixed(2)}</div>
+            <div class="trace-line">Compounded gain g = ${(r.gain).toFixed(4)} → ${fmtPct(r.gain * 100)}</div>
+          </div>
+          <div class="trace-group">
+            <div class="trace-step">Step 3 · adjusted output</div>
+            <div class="trace-line result">Adjusted Wh / query = ${r.baselineWhPerQuery.toFixed(3)} × (1 - ${r.gain.toFixed(4)}) = ${r.adjustedWhPerQuery.toFixed(3)}</div>
+            <div class="trace-line result">Adjusted tokens / Wh = ${state.avgTokensPerQuery} / ${r.adjustedWhPerQuery.toFixed(3)} = ${fmtInt(r.adjustedTokensPerWh)}</div>
+            <div class="trace-line result">Improvement = ${fmtPct(r.improvement)}</div>
+          </div>
+        </div>
+
+        <div class="callout info"><strong>Model scope:</strong> This simulator is intentionally framed as a systems-efficiency scenario tool. It uses exact arithmetic for throughput and energy-per-query calculations, while treating the user-supplied efficiency levers as operational assumptions rather than as laboratory-validated semiconductor physics.</div>
+      `;
+    }
+
+    function equationsSection(r) {
+      return `
+        <div class="section-head">
+          <h2><span class="accent">Equations</span> — what the model actually computes</h2>
+          <p>The rewritten math below matches the JavaScript. It keeps the core efficiency metric exact, makes the compounded systems model explicit, and treats entropy only as a conceptual analogy rather than a hidden driver of the output.</p>
+        </div>
+
+        <div class="equation-card">
+          <div class="equation-label">Core efficiency metric</div>
+          <div class="equation">η = N<sub>tokens</sub> / E<sub>Wh</sub><br><span class="muted">Efficiency is tokens delivered per watt-hour.</span></div>
+        </div>
+
+        <div class="equation-card">
+          <div class="equation-label">Baseline and adjusted efficiency</div>
+          <div class="equation">η<sub>0</sub> = N<sub>tokens</sub> / E<sub>query,0</sub><br>η<sub>1</sub> = N<sub>tokens</sub> / E<sub>query,1</sub><br>Improvement = ((η<sub>1</sub> − η<sub>0</sub>) / η<sub>0</sub>) × 100</div>
+        </div>
+
+        <div class="equation-card">
+          <div class="equation-label">Compounded systems-efficiency model</div>
+          <div class="equation">g = c + (1 − c)r + (1 − c)(1 − r)e<br>E<sub>query,1</sub> = E<sub>query,0</sub> × (1 − g)<br><span class="muted">c = cache-hit reduction, r = routing gain on uncached traffic, e = egress reduction on the remainder.</span></div>
+        </div>
+
+        <div class="equation-card">
+          <div class="equation-label">Conceptual complexity framing</div>
+          <div class="equation">S = k<sub>B</sub> ln(W)<br>|ΔS| = k<sub>B</sub> ln(W<sub>0</sub> / W<sub>1</sub>)<br><span class="muted">Use this only as a conceptual analogy for reduced operational complexity when system states or coordination paths shrink. It is not an active input to the simulator output.</span></div>
+        </div>
+
+        <div class="callout info"><strong>Current baseline:</strong> With the sliders at their default values, η<sub>0</sub> = ${fmtInt(r.baselineTokensPerWh)} tokens / Wh and η<sub>1</sub> = ${fmtInt(r.adjustedTokensPerWh)} tokens / Wh.</div>
+        <div class="callout warning"><strong>Why this rewrite is safer:</strong> Unsupported claims about precise 4nm leakage percentages, Blackwell-specific loss factors, and quantum-recovery percentages have been removed. The output now depends only on transparent variables that the model actually uses.</div>
+      `;
+    }
+
+    function competitiveSection() {
+      return `
+        <div class="section-head">
+          <h2><span class="accent">Competitive Matrix</span> — tightened to public claims</h2>
+          <p>This version avoids overstatement. It distinguishes exact-match caching from semantic caching, separates edge-network reach from app-layer gateway features, and avoids vendor claims that the retrieved public materials did not clearly support.</p>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Provider</th>
+                <th>Edge footprint</th>
+                <th>Inference posture</th>
+                <th>Cache behavior</th>
+                <th>Brokerage / orchestration</th>
+                <th>Best-fit framing</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight">
+                <td><strong>Akamai AI Grid</strong><span class="pill best">Strong fit</span></td>
+                <td>Publicly described as 4,400+ edge locations.</td>
+                <td>Distributed inference story using NVIDIA Blackwell-based infrastructure.</td>
+                <td>Public materials say AI Grid will leverage semantic caching, though maturity details are still limited in the retrieved sources.</td>
+                <td>Strong framing for routing workloads across edge, regional, and core tiers.</td>
+                <td>Best when the thesis depends on geographically distributed inference plus orchestration across multiple infrastructure tiers.</td>
+              </tr>
+              <tr>
+                <td><strong>Cloudflare AI Gateway</strong><span class="pill good">Good fit</span></td>
+                <td>Large global edge network.</td>
+                <td>Separate Cloudflare products support GPU-backed AI inference, so the gateway should not be described as simply “no GPU.”</td>
+                <td>Exact-match caching on the full request body unless custom logic changes the keying behavior.</td>
+                <td>Strong front-door gateway, observability, routing, and traffic control posture.</td>
+                <td>Best for request management, provider routing, and exact-match cache acceleration at the edge.</td>
+              </tr>
+              <tr>
+                <td><strong>Fastly AI Accelerator</strong><span class="pill good">Clear semantic cache story</span></td>
+                <td>Meaningful edge platform, but the retrieved material is less centered on huge distributed inference reach than Akamai’s AI Grid messaging.</td>
+                <td>Strong application acceleration posture.</td>
+                <td>Semantic caching for LLM APIs is a core part of the product positioning.</td>
+                <td>Useful at the application and delivery layer.</td>
+                <td>Best for semantic-cache-driven LLM cost and latency reduction.</td>
+              </tr>
+              <tr>
+                <td><strong>AWS native stack</strong><span class="pill note">Context-dependent</span></td>
+                <td>Large cloud and CDN footprint.</td>
+                <td>Strong centralized cloud inference posture.</td>
+                <td>No equivalent public claim retrieved here for built-in semantic caching in the same sense as Fastly’s AI Accelerator.</td>
+                <td>Can be commercially conflicted if the broker and destination cloud are the same entity.</td>
+                <td>Best when the architecture stays primarily inside AWS.</td>
+              </tr>
+              <tr>
+                <td><strong>Kong AI Gateway</strong><span class="pill note">Layered with infra</span></td>
+                <td>Software layer rather than a giant edge network by itself.</td>
+                <td>Depends on where it is deployed.</td>
+                <td>Gateway and governance posture are clearer than standalone infrastructure claims.</td>
+                <td>Good app-layer control plane on top of other infrastructure.</td>
+                <td>Best when you want policy, routing, and governance layered over a separate compute or edge fabric.</td>
+              </tr>
+              <tr>
+                <td><strong>Bifrost / LiteLLM / OpenRouter</strong><span class="pill note">Different layer</span></td>
+                <td>Software brokerage layer.</td>
+                <td>Depends on downstream providers.</td>
+                <td>Useful for model routing and request brokerage, not as a full infrastructure perimeter.</td>
+                <td>Good for app-level multi-model abstraction.</td>
+                <td>Best when the main problem is model access and routing rather than infrastructure orchestration.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warning"><strong>Caveat:</strong> Akamai publicly says AI Grid will leverage semantic caching, but the retrieved public materials were less explicit about maturity and implementation depth than Fastly’s semantic-caching product materials. Cloudflare’s AI Gateway documentation, by contrast, clearly describes exact-match caching of the full request body.</div>
+
+        <div class="callout info"><strong>Kong + Akamai framing:</strong> A defensible way to describe this stack is that Kong handles application-layer gateway, routing, and governance functions, while Akamai provides cloud and edge infrastructure options, including LKE and broader network reach.</div>
+      `;
+    }
+
+    function rationaleSection() {
+      return `
+        <div class="section-head">
+          <h2><span class="accent">Why this framing works</span> — persuasive without overclaiming</h2>
+          <p>The goal is to keep the argument strong while making every sentence easier to defend in front of technical reviewers, infrastructure buyers, or partner teams.</p>
+        </div>
+
+        <div class="reason-grid">
+          <article class="reason">
+            <div class="reason-num">01</div>
+            <h3>Exact where it should be</h3>
+            <p>The simulator is now exact on the core arithmetic. Tokens per watt-hour, compounded efficiency gain, adjusted energy per query, and estimated annual energy-cost reduction all come from the same underlying model.</p>
+          </article>
+          <article class="reason">
+            <div class="reason-num">02</div>
+            <h3>Explicit about assumptions</h3>
+            <p>Instead of presenting unsupported semiconductor constants as fact, the interface now makes clear that cache performance, routing gain, and egress reduction are operational assumptions that users can tune for their own environment.</p>
+          </article>
+          <article class="reason">
+            <div class="reason-num">03</div>
+            <h3>Stronger vendor language</h3>
+            <p>The Akamai, Cloudflare, and Fastly descriptions are now differentiated in a way that tracks the public materials more closely: Akamai for distributed orchestration posture, Cloudflare for gateway and exact-match cache behavior, and Fastly for semantic caching.</p>
+          </article>
+        </div>
+
+        <div class="callout info" style="margin-top: 32px;"><strong>Recommended thesis:</strong> Tokens / Watt / User is a useful infrastructure-efficiency lens for AI delivery, especially when the biggest practical gains come from avoiding unnecessary model calls, placing work on the right compute tier, and reducing wasteful cross-network movement of data.</div>
+      `;
+    }
+
+    function bindControls() {
+      const bindings = [
+        ['s-queries', 'monthlyQueries'],
+        ['s-tokens', 'avgTokensPerQuery'],
+        ['s-wh', 'whPerQuery'],
+        ['s-cache', 'cacheHit'],
+        ['s-routing', 'routingGain'],
+        ['s-egress', 'egressReduction']
+      ];
+      bindings.forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', e => {
+          state[key] = parseFloat(e.target.value);
+          render('simulator');
+        });
+      });
+    }
+
+    function render(active = 'simulator') {
+      const r = calculate();
+      renderTabs(active);
+      const content = {
+        simulator: simulatorSection(r),
+        equations: equationsSection(r),
+        competitive: competitiveSection(),
+        rationale: rationaleSection()
+      };
+      document.getElementById('app').innerHTML = sectionShell(active, content);
+      bindControls();
+    }
+
+    function showSection(id) {
+      render(id);
+      window.scrollTo({ top: document.querySelector('.nav').offsetTop, behavior: 'smooth' });
+    }
+
+    render();
+  </script>
 </body>
 </html>
